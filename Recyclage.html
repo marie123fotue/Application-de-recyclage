@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recyclage du Jour - EcoFoyer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        nav {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            font-size: 1.5em;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .nav-brand i {
+            color: #2ed573;
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            color: white;
+            font-size: 3em;
+            margin-bottom: 15px;
+            font-weight: 800;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.3em;
+            font-weight: 300;
+        }
+
+        /* Section principale */
+        .recycling-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2.2em;
+            margin-bottom: 40px;
+            font-weight: 800;
+        }
+
+        .date-info {
+            text-align: center;
+            background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            font-size: 1.3em;
+        }
+
+        /* Grille de types de déchets */
+        .waste-types-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .waste-type {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
+            border: 4px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 35px 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .waste-type::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(46, 213, 115, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .waste-type:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .waste-type:hover {
+            transform: translateY(-10px) scale(1.05);
+            border-color: #2ed573;
+            box-shadow: 0 15px 40px rgba(46, 213, 115, 0.3);
+        }
+
+        .waste-type.selected {
+            background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
+            border-color: #2ed573;
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(46, 213, 115, 0.5);
+        }
+
+        .waste-type i {
+            font-size: 4em;
+            margin-bottom: 20px;
+            display: block;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .waste-type:hover i {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .waste-type.selected i {
+            animation: bounce 0.6s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-15px) rotate(-10deg); }
+            50% { transform: translateY(0) rotate(10deg); }
+            75% { transform: translateY(-10px) rotate(-5deg); }
+        }
+
+        .waste-name {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .waste-description {
+            font-size: 0.95em;
+            opacity: 0.8;
+            position: relative;
+            z-index: 1;
+        }
+
+        .waste-type.selected .waste-description {
+            opacity: 1;
+        }
+
+        .check-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            color: #2ed573;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 2;
+        }
+
+        .waste-type.selected .check-icon {
+            display: flex;
+            animation: checkAppear 0.4s ease;
+        }
+
+        @keyframes checkAppear {
+            from {
+                transform: scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        /* Résumé de sélection */
+        .selection-summary {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .selection-summary.active {
+            display: block;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .summary-title {
+            font-size: 1.5em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .selected-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .selected-tag {
+            background: #2ed573;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: tagAppear 0.3s ease;
+        }
+
+        @keyframes tagAppear {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Boutons d'action */
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 18px 50px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        .btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(46, 213, 115, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(46, 213, 115, 0.6);
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #e0e0e0 0%, #d0d0d0 100%);
+            color: #555;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #d0d0d0 0%, #c0c0c0 100%);
+            transform: scale(1.05);
+        }
+
+        /* Modal de confirmation */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            max-width: 500px;
+            text-align: center;
+            animation: scaleIn 0.4s ease;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            color: white;
+            margin: 0 auto 25px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .modal-title {
+            font-size: 2em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+
+        .modal-message {
+            color: #555;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2em;
+            }
+            
+            .recycling-container {
+                padding: 30px 20px;
+            }
+            
+            .waste-types-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+            }
+            
+            .waste-type i {
+                font-size: 3em;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="index.html" class="nav-brand">
+                <i class="fas fa-recycle"></i>
+                EcoFoyer
+            </a>
+        </nav>
+
+        <div class="page-header">
+            <h1 class="page-title">🗑️ Recyclage du Jour</h1>
+            <p class="page-subtitle">Sélectionnez les déchets que vous recyclez aujourd'hui</p>
+        </div>
+
+        <div class="recycling-container">
+            <div class="date-info">
+                <i class="fas fa-calendar-day"></i>
+                Mardi 20 Janvier 2026
+            </div>
+
+            <h2 class="section-title">Quels types de déchets recyclés aujourd'hui ?</h2>
+
+            <div class="selection-summary" id="selectionSummary">
+                <div class="summary-title">
+                    <i class="fas fa-list-check"></i> Déchets sélectionnés :
+                </div>
+                <div class="selected-items" id="selectedItems"></div>
+            </div>
+
+            <div class="waste-types-grid">
+                <div class="waste-type" onclick="toggleWaste(this, 'Papier')" data-waste="papier">
+                    <div class="check-icon"><i class="fas fa-check"></i></div>
+                    <i class="fas fa-file-alt"></i>
+                    <div class="waste-name">Papier</div>
+                    <div class="waste-description">Journaux, magazines, feuilles</div>
+                </div>
+
+                <div class="waste-type" onclick="toggleWaste(this, 'Carton')" data-waste="carton">
+                    <div class="check-icon"><i class="fas fa-check"></i></div>
+                    <i class="fas fa-box"></i>
+                    <div class="waste-name">Carton</div>
+                    <div class="waste-description">Boîtes, emballages</div>
+                </div>
+
+                <div class="waste-type" onclick="toggleWaste(this, 'Verre')" data-waste="verre">
+                    <div class="check-icon"><i class="fas fa-check"></i></div>
+                    <i class="fas fa-wine-bottle"></i>
+                    <div class="waste-name">Verre</div>
+                    <div class="waste-description">Bouteilles, bocaux</div>
+                </div>
+
+                <div class="waste-type" onclick="toggleWaste(this, 'Plastique')" data-waste="plastique">
+                    <div class="check-icon"><i class="fas fa-check"></i></div>
+                    <i class="fab fa-python"></i>
+                    <div class="waste-name">Plastique</div>
+                    <div class="waste-description">Bouteilles, emballages</div>
+                </div>
+
+                <div class="waste-type" onclick="toggleWaste(this, 'Métal')" data-waste="metal">
+                    <div class="check-icon"><i class="fas fa-check"></i></div>
+                    <i class="fas fa-cog"></i>
+                    <div class="waste-name">Métal</div>
+                    <div class="waste-description">Canettes, conserves</div>
+                </div>
+
+                <div class="waste-type" onclick="toggleWaste(this, 'Organique')" data-waste="organique">
+                    <div class="check-icon"><i class="fas fa-check"></i></div>
+                    <i class="fas fa-leaf"></i>
+                    <div class="waste-name">Organique</div>
+                    <div class="waste-description">Épluchures, restes</div>
+                </div>
+
+                <div class="waste-type" onclick="toggleWaste(this, 'Piles')" data-waste="piles">
+                    <div class="check-icon"><i class="fas fa-check"></i></div>
+                    <i class="fas fa-battery-full"></i>
+                    <div class="waste-name">Piles</div>
+                    <div class="waste-description">Piles, batteries</div>
+                </div>
+
+                <div class="waste-type" onclick="toggleWaste(this, 'Électronique')" data-waste="electronique">
+                    <div class="check-icon"><i class="fas fa-check"></i></div>
+                    <i class="fas fa-laptop"></i>
+                    <div class="waste-name">Électronique</div>
+                    <div class="waste-description">Appareils, câbles</div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="resetSelection()">
+                    <i class="fas fa-redo"></i>
+                    <span>Réinitialiser</span>
+                </button>
+                <button class="btn btn-primary" id="validateBtn" onclick="validateRecycling()" disabled>
+                    <i class="fas fa-check-circle"></i>
+                    <span>Valider le recyclage</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 class="modal-title">Recyclage validé !</h3>
+            <p class="modal-message">
+                Bravo ! Votre contribution d'aujourd'hui a été enregistrée avec succès.<br>
+                Continuez comme ça ! 🌱
+            </p>
+            <button class="btn btn-primary" onclick="closeModal()">
+                <span>Parfait !</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let selectedWastes = [];
+
+        function toggleWaste(element, name) {
+            element.classList.toggle('selected');
+            
+            const wasteType = element.dataset.waste;
+            const index = selectedWastes.findIndex(w => w.type === wasteType);
+            
+            if (index > -1) {
+                selectedWastes.splice(index, 1);
+            } else {
+                selectedWastes.push({ type: wasteType, name: name });
+            }
+            
+            updateSummary();
+            updateValidateButton();
+        }
+
+        function updateSummary() {
+            const summary = document.getElementById('selectionSummary');
+            const itemsContainer = document.getElementById('selectedItems');
+            
+            if (selectedWastes.length > 0) {
+                summary.classList.add('active');
+                itemsContainer.innerHTML = selectedWastes.map(w => 
+                    `<div class="selected-tag">
+                        <i class="fas fa-check-circle"></i>
+                        ${w.name}
+                    </div>`
+                ).join('');
+            } else {
+                summary.classList.remove('active');
+            }
+        }
+
+        function updateValidateButton() {
+            const btn = document.getElementById('validateBtn');
+            btn.disabled = selectedWastes.length === 0;
+        }
+
+        function resetSelection() {
+            document.querySelectorAll('.waste-type.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
+            selectedWastes = [];
+            updateSummary();
+            updateValidateButton();
+        }
+
+        function validateRecycling() {
+            if (selectedWastes.length === 0) return;
+            
+            // Afficher le modal
+            document.getElementById('confirmModal').classList.add('active');
+            
+            // Sauvegarder dans le localStorage (simulation)
+            const today = new Date().toISOString().split('T')[0];
+            const recyclingData = {
+                date: today,
+                wastes: selectedWastes,
+                timestamp: new Date().toISOString()
+            };
+            
+            let history = JSON.parse(localStorage.getItem('recyclingHistory') || '[]');
+            history.unshift(recyclingData);
+            localStorage.setItem('recyclingHistory', JSON.stringify(history));
+        }
+
+        function closeModal() {
+            document.getElementById('confirmModal').classList.remove('active');
+            setTimeout(() => {
+                window.location.href = 'validation.html';
+            }, 300);
+        }
+
+        // Charger la sélection du jour si elle existe
+        window.addEventListener('load', () => {
+            const today = new Date().toISOString().split('T')[0];
+            const history = JSON.parse(localStorage.getItem('recyclingHistory') || '[]');
+            const todayData = history.find(h => h.date === today);
+            
+            if (todayData) {
+                todayData.wastes.forEach(w => {
+                    const element = document.querySelector(`[data-waste="${w.type}"]`);
+                    if (element) {
+                        element.classList.add('selected');
+                        selectedWastes.push(w);
+                    }
+                });
+                updateSummary();
+                updateValidateButton();
+            }
+        });
+    </script>
+</body>
+</html>
